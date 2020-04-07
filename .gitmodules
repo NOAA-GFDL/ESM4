@@ -16,3 +16,9 @@
 [submodule "src/ice_param"]
 	path = src/ice_param
 	url = http://github.com/NOAA-GFDL/ice_param.git
+[submodule "src/mom6"]
+	path = src/mom6
+	url = https://github.com/NOAA-GFDL/MOM6-examples.git
+[submodule "src/ocean_shared"]
+	path = src/ocean_shared
+	url = https://github.com/NOAA-GFDL/ocean_BGC
