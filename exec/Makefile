@@ -3,7 +3,6 @@
 BUILDROOT = $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 SRCROOT = $(abspath $(BUILDROOT)../src)/ 
-#SRCROOT = /lustre/f2/dev/Thomas.Robinson/ESM4/DECK/20190304/esm4.1_libs_compile/src/
 
 MK_TEMPLATE = $(BUILDROOT)templates/intel.mk
 

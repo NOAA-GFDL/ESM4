@@ -6,9 +6,9 @@
 ############
 # Commands Macros
 ############
-FC = ftn
-CC = cc
-LD = ftn $(MAIN_PROGRAM)
+FC = mpiifort
+CC = mpiicc
+LD = mpiifort
 
 #######################
 # Build target macros
