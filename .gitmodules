@@ -4,3 +4,15 @@
 [submodule "src/GFDL_atmos_cubed_sphere"]
 	path = src/GFDL_atmos_cubed_sphere
 	url = http://github.com/NOAA-GFDL/GFDL_atmos_cubed_sphere.git
+[submodule "src/atmos_drivers"]
+	path = src/atmos_drivers
+	url = http://github.com/NOAA-GFDL/atmos_drivers.git
+[submodule "src/atmos_phys"]
+	path = src/atmos_phys
+	url = http://github.com/NOAA-GFDL/atmos_phys.git
+[submodule "src/coupler"]
+	path = src/coupler
+	url = http://github.com/NOAA-GFDL/coupler.git
+[submodule "src/ice_param"]
+	path = src/ice_param
+	url = http://github.com/NOAA-GFDL/ice_param.git
