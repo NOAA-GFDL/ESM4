@@ -1,3 +1,6 @@
 [submodule "src/FMS"]
 	path = src/FMS
 	url = http://github.com/NOAA-GFDL/FMS.git
+[submodule "src/GFDL_atmos_cubed_sphere"]
+	path = src/GFDL_atmos_cubed_sphere
+	url = http://github.com/NOAA-GFDL/GFDL_atmos_cubed_sphere.git
