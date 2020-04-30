@@ -22,3 +22,6 @@
 [submodule "src/ocean_shared"]
 	path = src/ocean_shared
 	url = https://github.com/NOAA-GFDL/ocean_BGC
+[submodule "src/lm4p"]
+	path = src/lm4p
+	url = https://github.com/NOAA-GFDL/lm4.git
