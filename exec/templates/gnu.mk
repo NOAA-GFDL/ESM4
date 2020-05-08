@@ -222,11 +222,8 @@ FFLAGS += $(FFLAGS_VERBOSE)
 LDFLAGS += $(LDFLAGS_VERBOSE)
 endif
 
-ifeq ($(NETCDF),3)
-  # add the use_LARGEFILE cppdef
-  ifneq ($(findstring -Duse_netCDF,$(CPPDEFS)),)
-    CPPDEFS += -Duse_LARGEFILE
-  endif
+ifneq ($(findstring -Duse_netCDF,$(CPPDEFS)),)
+  CPPDEFS += -Duse_LARGEFILE
 endif
 
 ifdef COVERAGE
