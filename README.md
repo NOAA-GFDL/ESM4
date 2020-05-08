@@ -15,8 +15,10 @@ git clone --recursive
 This model was originally compiled and run with the intel16 compiler.
 It is recommended that you compile with an intel compiler.
 Makefiles have been included in the *exec/* folder.  There are several
-option for compiling, which can be found in the template/intel.mk.  The
-most common compile with optimizations on and with openmp would be 
+option for compiling, which can be found in the template/intel.mk.  
+You may need to edit the template/intel.mk to update the compiler names
+or add any CPPDEF options specific for your system.
+The most common compile with optimizations on and with openmp would be 
 ```bash
 cd exec
 make OPENMP=on
