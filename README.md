@@ -14,6 +14,12 @@ git clone --recursive
 #Compiling
 This model was originally compiled and run with the intel16 compiler.
 It is recommended that you compile with an intel compiler.
+
+Compiling assumes that you have an intel compiler, MPI (impi, mpich,
+openmpi, etc), netcdf, and hdf5 in your LD_LIBRARY_PATH and LIBRARY_PATH.
+If you work on a machine with modules, you may need to load these 
+packages into your environment.
+
 Makefiles have been included in the *exec/* folder.  There are several
 option for compiling, which can be found in the template/intel.mk.  
 You may need to edit the template/intel.mk to update the compiler names
