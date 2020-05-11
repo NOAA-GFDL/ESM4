@@ -1,17 +1,21 @@
 ## Earth System Model 4
 
-#What Is Included
-* src/ source code for the ESM4 model (all code is in submodules)
-* exec/ Makefiles to compile the code 
-* run/ Simple run script
+# What Is Included
+* [src/]((https://github.com/NOAA-GFDL/ESM4/tree/master/src) source code for the ESM4 model (all code is in submodules)
+* [exec/]((https://github.com/NOAA-GFDL/ESM4/tree/master/exec) Makefiles to compile the code 
+* [run/]((https://github.com/NOAA-GFDL/ESM4/tree/master/run) Simple run script
 
-#Cloning
+# Cloning
 To clone the ESM4 model please use the recursive option
 ```bash
-git clone --recursive 
+git clone --recursive git@github.com:NOAA-GFDL/ESM4.git 
+```
+or 
+```bash
+git clone --recursive https://github.com/NOAA-GFDL/ESM4.git
 ```
 
-#Compiling
+# Compiling
 This model was originally compiled and run with the intel16 compiler.
 It is recommended that you compile with an intel compiler.
 
@@ -20,8 +24,10 @@ openmpi, etc), netcdf, and hdf5 in your LD_LIBRARY_PATH and LIBRARY_PATH.
 If you work on a machine with modules, you may need to load these 
 packages into your environment.
 
-Makefiles have been included in the *exec/* folder.  There are several
-option for compiling, which can be found in the template/intel.mk.  
+Makefiles have been included in the 
+[exec/](https://github.com/NOAA-GFDL/ESM4/tree/master/exec) folder.
+There are several option for compiling, which can be found in the 
+[template/intel.mk](https://github.com/NOAA-GFDL/ESM4/blob/master/exec/templates/intel.mk).  
 You may need to edit the template/intel.mk to update the compiler names
 or add any CPPDEF options specific for your system.
 The most common compile with optimizations on and with openmp would be 
@@ -39,7 +45,7 @@ make DEBUG=on OPENMP=on
 ```
 Compiling with openMP is optional.
 
-#Model running
+# Model running
 A work directory needed for running the model can be obtained from
 
 The directory contains input.nml as the namelist, various input tables needed
@@ -47,12 +53,10 @@ for running the model, and model input files in a folder called INPUT/.  There
 is also a directory named RESTART/ that should be empty at the beginning of
 each run. 
 
-There is a skeleton of a run script names run/ESM4_run.sh.  You must update this
+There is a skeleton of a run script names [run/ESM4_run.sh](https://github.com/NOAA-GFDL/ESM4/blob/master/run/ESM4_run.sh).  You must update this
 script to run the model.  Include a path to the work directory and the executable.
 You should also update the program you need to run the model on your system.  The
 default for this script is `srun`.
-
-
 
 
 # Disclaimer
