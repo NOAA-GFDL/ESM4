@@ -1,8 +1,4 @@
-# Template for the Intel Compilers on a Cray System
-#
-# Typical use with mkmf
-# mkmf -t intel.mk -c"-Duse_libMPI -Duse_netCDF" path_names /usr/local/include
-
+# Template for the Intel Compilers
 ############
 # Commands Macros
 ############
@@ -44,10 +40,20 @@ LD = mpiifort
 # If non-blank, do not use the -qoverride-limits compiler option.
 # Default behavior is to compile with -qoverride-limits.
 
-# NETCDF
-# If value is '3' and CPPDEFS contains '-Duse_netCDF', then the
-# additional cpp macro '-Duse_LARGEFILE' is added to the CPPDEFS
-# macro.
+# NETCDF_LIBS
+# A list of the netcdf libraries.  Default is $(shell nf-config --flibs)
+
+# MPI_LIBS 
+# A list of MPI libraries.  Defaut is $(shell pkg-config --libs mpich2-f90)
+
+# HDF_LIBS 
+# A list of HDF5 libraries.
+# Default is -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran
+
+# MKL_LIBS 
+# A list of intel MKL libraries. Give the value "none" to list none of the
+# libraries.  This may be necessary if using ftn on a cray machine
+# Default is -lmkl_blas95_lp64 -lmkl_lapack95_lp64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential
 
 # INCLUDES
 # A list of -I Include directories to be added to the the compile
