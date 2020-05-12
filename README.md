@@ -1,11 +1,11 @@
-## Earth System Model 4
+# Earth System Model 4
 
-# What Is Included
+## What Is Included
 * [src/]((https://github.com/NOAA-GFDL/ESM4/tree/master/src) source code for the ESM4 model (all code is in submodules)
 * [exec/]((https://github.com/NOAA-GFDL/ESM4/tree/master/exec) Makefiles to compile the code 
 * [run/]((https://github.com/NOAA-GFDL/ESM4/tree/master/run) Simple run script
 
-# Cloning
+## Cloning
 To clone the ESM4 model please use the recursive option
 ```bash
 git clone --recursive git@github.com:NOAA-GFDL/ESM4.git 
@@ -15,12 +15,13 @@ or
 git clone --recursive https://github.com/NOAA-GFDL/ESM4.git
 ```
 
-# Compiling
+## Compiling
 This model was originally compiled and run with the intel16 compiler.
 It is recommended that you compile with an intel compiler.
 
 Compiling assumes that you have an intel compiler, MPI (impi, mpich,
 openmpi, etc), netcdf, and hdf5 in your LD_LIBRARY_PATH and LIBRARY_PATH.
+It is also assumed that nf-config and nc-config are in your path. 
 If you work on a machine with modules, you may need to load these 
 packages into your environment.
 
@@ -45,7 +46,28 @@ make DEBUG=on OPENMP=on
 ```
 Compiling with openMP is optional.
 
-# Model running
+
+Here are examples of how to compile the model on various systems:
+
+gaea (NOAA RDHPCS cray system)
+```bash
+module load intel
+module load cray-netcdf
+module load cray-hdf5
+git clone --recursive git@github.com:NOAA-GFDL/ESM4.git
+cd ESM4/exec
+make MKL_LIBS="none" OPENMP=y
+```
+Compiling on orion (MSU)
+```bash
+module load intel impi netcdf hdf5
+export LIBRARY_PATH=${LIBRARY_PATH}:${LD_LIBRARY_PATH}
+git clone --recursive git@github.com:NOAA-GFDL/ESM4.git
+cd ESM4/exec
+make OPENMP=on
+```
+
+## Model running
 A work directory needed for running the model can be obtained from
 
 The directory contains input.nml as the namelist, various input tables needed
@@ -59,7 +81,7 @@ You should also update the program you need to run the model on your system.  Th
 default for this script is `srun`.
 
 
-# Disclaimer
+## Disclaimer
 
 The United States Department of Commerce (DOC) GitHub project code is provided
 on an 'as is' basis and the user assumes responsibility for its use. DOC has
