@@ -69,13 +69,14 @@ make OPENMP=on
 
 ## Model running
 A work directory needed for running the model can be obtained from
+ftp://data1.gfdl.noaa.gov/users/ESM4/ESM4Documentation/GFDL-ESM4/inputData/ESM4_rundir.tar.gz
 
 The directory contains input.nml as the namelist, various input tables needed
 for running the model, and model input files in a folder called INPUT/.  There
 is also a directory named RESTART/ that should be empty at the beginning of
 each run. 
 
-There is a skeleton of a run script names [run/ESM4_run.sh](https://github.com/NOAA-GFDL/ESM4/blob/master/run/ESM4_run.sh).  You must update this
+There is a skeleton of a run script named [run/ESM4_run.sh](https://github.com/NOAA-GFDL/ESM4/blob/master/run/ESM4_run.sh).  You must update this
 script to run the model.  Include a path to the work directory and the executable.
 You should also update the program you need to run the model on your system.  The
 default for this script is `srun`.
