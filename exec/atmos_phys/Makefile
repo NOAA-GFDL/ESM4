@@ -1,6 +1,10 @@
 # Makefile created by mkmf 19.3.0
 
-CPPDEFS = -DINTERNAL_FILE_NML -g -DCLUBB
+ifeq ($(CLUBB),off)
+ CPPDEFS = -DINTERNAL_FILE_NML -g 
+else
+ CPPDEFS = -DINTERNAL_FILE_NML -g -DCLUBB
+endif
 
 OTHERFLAGS = -I$(BUILDROOT)fms -I$(SRCROOT)FMS/include
 
