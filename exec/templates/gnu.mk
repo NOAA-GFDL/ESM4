@@ -1,14 +1,14 @@
-# Template for the Intel Compilers on Linux systems
+# Template for the GNU Compiler Collection on a Cray System
 #
 # Typical use with mkmf
-# mkmf -t linux-intel.mk -c"-Duse_libMPI -Duse_netCDF" path_names /usr/local/include
+# mkmf -t ncrc-cray.mk -c"-Duse_libMPI -Duse_netCDF" path_names /usr/local/include
 
 ############
-# Command Macros
-FC = ftn
-CC = cc
-CXX = cc
-LD = ftn
+# Commands Macros
+############
+FC = mpif90
+CC = mpicc
+LD = mpif90 $(MAIN_PROGRAM)
 
 #######################
 # Build target macros
@@ -16,67 +16,36 @@ LD = ftn
 # Macros that modify compiler flags used in the build.  Target
 # macrose are usually set on the call to make:
 #
-#    make BLD_TYPE=PROD NETCDF=3
+#    make REPRO=on NETCDF=3
 #
 # Most target macros are activated when their value is non-blank.
 # Some have a single value that is checked.  Others will use the
 # value of the macro in the compile command.
 
-# BLD_TYPE
-# Determines the type of build.  Values are:
-# PROD - Use the production settings (default)
-# REPRO - Extra options to guarentee run to run reproducibility.
-# DEBUG - Compile with debug options (-O0 -g)
-# TEST - Use additional compiler options defined in FFLAGS_TEST
-#        and CFLAGS_TEST
-ifndef BLD_TYPE
-BLD_TYPE = PROD
-endif
+DEBUG =              # If non-blank, perform a debug build (Cannot be
+                     # mixed with REPRO or TEST)
 
-# NETCDF_FLAGS
-# NETCDF_LIBS
-# If defined, use the NETCDF compile and link options defined in these
-# variables.  If these options are not defined, the makefile will
-# attempt to get the correct options from the `nf-config` command.
+REPRO =              # If non-blank, erform a build that guarentees
+                     # reprodicuibilty from run to run.  Cannot be used
+                     # with DEBUG or TEST
 
-# MPI_FLAGS
-# MPI_LIBS
-# If defined, use the MPI compile and link options defined in these
-# variables.  If these options are not defined, the makefile will
-# attempt to get the correct options from the `pkg-config` for mpich2
-# MPI library.
+TEST  =              # If non-blank, use the compiler options defined in
+                     # the FFLAGS_TEST and CFLAGS_TEST macros.  Cannot be
+                     # use with REPRO or DEBUG
 
-# VERBOSE
-# If non-blank, add additional verbosity compiler options
+VERBOSE =            # If non-blank, add additional verbosity compiler
+                     # options
 
-# OPENMP
-# If non-blank, compile with openmp enabled
+OPENMP =             # If non-blank, compile with openmp enabled
 
-# NO_OVERRIDE_LIMITS
-# If non-blank, do not use the -qoverride-limits compiler option.
-# Default behavior is to compile with -qoverride-limits.
+NETCDF =             # If value is '3' and CPPDEFS contains
+                     # '-Duse_netCDF', then the additional cpp macro
+                     # '-Duse_LARGEFILE' is added to the CPPDEFS macro.
 
-# NETCDF
-# If value is '3' (default) and CPPDEFS contains '-Duse_netCDF', then
-# the additional cpp macro '-Duse_LARGEFILE' is added to the CPPDEFS
-# macro.
-ifndef NETCDF
-NETCDF = 3
-endif
+INCLUDES =           # A list of -I Include directories to be added to the
+                     # the compile command.
 
-# INCLUDES
-#A list of -I Include directories to be added to the the compile
-#command.
-
-# ISA
-# The Intel Instruction Set Archetecture (ISA) compile options to use.
-# If blank, than use the default ISA settings for the host.
-ifndef ISA
-ISA = -msse2
-endif
-
-# COVERAGE
-# If non-blank Add the code coverage compile options.
+COVERAGE =           # Add the code coverage compile options.
 
 # Need to use at least GNU Make version 3.81
 need := 3.81
@@ -85,25 +54,35 @@ ifneq ($(need),$(ok))
 $(error Need at least make version $(need).  Load module gmake/3.81)
 endif
 
+# REPRO, DEBUG and TEST need to be mutually exclusive of each other.
+# Make sure the user hasn't supplied two at the same time
+ifdef REPRO
+ifneq ($(DEBUG),)
+$(error Options REPRO and DEBUG cannot be used together)
+else ifneq ($(TEST),)
+$(error Options REPRO and TEST cannot be used together)
+endif
+else ifdef DEBUG
+ifneq ($(TEST),)
+$(error Options DEBUG and TEST cannot be used together)
+endif
+endif
+
 MAKEFLAGS += --jobs=$(shell grep '^processor' /proc/cpuinfo | wc -l)
 
+# Required Preprocessor Macros:
+CPPDEFS += -Duse_netCDF
+
+# Additional Preprocessor Macros needed due to  Autotools and CMake
+CPPDEFS += -DHAVE_SCHED_GETAFFINITY
+
 # Macro for Fortran preprocessor
-FPPFLAGS = $(INCLUDES)
+FPPFLAGS := $(INCLUDES)
 # Fortran Compiler flags for the NetCDF library
-ifndef NETCDF_FLAGS
 FPPFLAGS += $(shell nf-config --fflags)
-else
-FPPFLAGS += $(NETCDF_FLAGS)
-endif
-# Fortran Compiler flags for the MPICH MPI library
-ifndef MPI_FLAGS
-FPPFLAGS += $(shell pkg-config --cflags-only-I mpich2-c)
-else
-FPPFLAGS += $(MPI_FLAGS)
-endif
 
 # Base set of Fortran compiler flags
-FFLAGS := -fcray-pointer -fdefault-real-8 -fdefault-double-8 -Waliasing -ffree-line-length-none -fno-range-check
+FFLAGS := -fcray-pointer -fdefault-real-8 -fdefault-double-8 -Waliasing -ffree-line-length-none -fno-range-check -fallow-invalid-boz -fallow-argument-mismatch
 
 # Flags based on perforance target (production (OPT), reproduction (REPRO), or debug (DEBUG)
 FFLAGS_OPT = -O2 -fno-expensive-optimizations
@@ -112,93 +91,54 @@ FFLAGS_DEBUG = -O0 -g -W -fbounds-check -ffpe-trap=invalid,zero,overflow
 
 # Flags to add additional build options
 FFLAGS_OPENMP = -fopenmp
-FFLAGS_OVERRIDE_LIMITS = 
 FFLAGS_VERBOSE = -Wall -Wextra
 FFLAGS_COVERAGE =
 
 # Macro for C preprocessor
-CPPFLAGS = -D__IFC $(INCLUDES)
+CPPFLAGS := -D__IFC $(INCLUDES)
 # C Compiler flags for the NetCDF library
-ifndef NETCDF_FLAGS
 CPPFLAGS += $(shell nc-config --cflags)
-else
-CPPFLAGS += $(NETCDF_FLAGS)
-endif
-# C Compiler flags for the MPICH MPI library
-ifndef MPI_FLAGS
-CPPFLAGS += $(shell pkg-config --cflags-only-I mpich2-c)
-else
-CPPFLAGS += $(MPI_FLAGS)
-endif
 
 # Base set of C compiler flags
-CFLAGS := 
+CFLAGS :=
 
 # Flags based on perforance target (production (OPT), reproduction (REPRO), or debug (DEBUG)
-CFLAGS_PROD = -O2
+CFLAGS_OPT = -O2
 CFLAGS_REPRO = -O2
-CFLAGS_DEBUG = -O0 -g 
+CFLAGS_DEBUG = -O0 -g
 
 # Flags to add additional build options
 CFLAGS_OPENMP = -fopenmp
 CFLAGS_VERBOSE = -Wall -Wextra
 CFLAGS_COVERAGE =
 
-# Optional Testing compile flags.  If FFLAGS_TEST or CFLAGS_TEST are not defined, then the PROD
-# compile settings will be used
-ifndef FFLAGS_TEST
-FFLAGS_TEST = $(FFLAGS_PROD)
-endif
-ifndef CFLAGS_TEST
-CFLAGS_TEST = $(CFLAGS_OPT)
-endif
+# Optional Testing compile flags.  Mutually exclusive from DEBUG, REPRO, and OPT
+# *_TEST will match the production if no new option(s) is(are) to be tested.
+FFLAGS_TEST := $(FFLAGS_OPT)
+CFLAGS_TEST := $(CFLAGS_OPT)
 
 # Linking flags
-LDFLAGS :=
+LDFLAGS := -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran `nc-config --libs` `nf-config --flibs`
 LDFLAGS_OPENMP := -fopenmp
 LDFLAGS_VERBOSE :=
 LDFLAGS_COVERAGE :=
 
 # Start with a blank LIBS
 LIBS =
-# NetCDF library flags
-ifndef NETCDF_LIBS
-LIBS += $(shell nf-config --flibs)
-else
-LIBS += $(NETCDF_LIBS)
-endif
-# MPICH MPI library flags
-ifndef MPI_LIBS
-LIBS += $(shell pkg-config --libs mpich2-f90)
-else
-LIBS += $(MPI_LIBS)
-endif
-# HDF library flags
-ifndef HDF_LIBS
-LIBS += -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran
-else
-LIBS += $(HDF_LIBS)
-endif
-# MKL library flags
-ifndef MKL_LIBS
-#LIBS += -lmkl_blas95_lp64 -lmkl_lapack95_lp64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential
-else
-LIBS += $(MKL_LIBS)
-endif
 
 # Get compile flags based on target macros.
-ifeq ($(BLD_TYPE),REPRO)
+ifdef REPRO
 CFLAGS += $(CFLAGS_REPRO)
 FFLAGS += $(FFLAGS_REPRO)
-else ifeq ($(BLD_TYPE),DEBUG)
+else ifdef DEBUG
 CFLAGS += $(CFLAGS_DEBUG)
 FFLAGS += $(FFLAGS_DEBUG)
-else ifeq ($(BLD_TYPE),TEST)
+else ifdef TEST
 CFLAGS += $(CFLAGS_TEST)
 FFLAGS += $(FFLAGS_TEST)
 else
-CFLAGS += $(CFLAGS_PROD)
-FFLAGS += $(FFLAGS_PROD)
+CFLAGS += $(CFLAGS_OPT)
+FFLAGS += $(FFLAGS_OPT)
 endif
 
 ifdef OPENMP
@@ -207,22 +147,14 @@ FFLAGS += $(FFLAGS_OPENMP)
 LDFLAGS += $(LDFLAGS_OPENMP)
 endif
 
-ifdef ISA
-CFLAGS += $(ISA)
-FFLAGS += $(ISA)
-endif
-
-ifndef NO_OVERRIDE_LIMITS
-FFLAGS += $(FFLAGS_OVERRIDE_LIMITS)
-endif
-
 ifdef VERBOSE
 CFLAGS += $(CFLAGS_VERBOSE)
 FFLAGS += $(FFLAGS_VERBOSE)
 LDFLAGS += $(LDFLAGS_VERBOSE)
 endif
 
-ifneq ($(findstring -Duse_netCDF,$(CPPDEFS)),)
+ifeq ($(NETCDF),3)
+  # add the use_LARGEFILE cppdef
   CPPDEFS += -Duse_LARGEFILE
 endif
 
@@ -246,17 +178,18 @@ LDFLAGS += $(LIBS)
 # .f, .f90, .F, .F90. Given a sourcefile <file>.<ext>, where <ext> is one of
 # the above, this provides a number of default actions:
 
-# make <file>.opt	create an optimization report
-# make <file>.o		create an object file
-# make <file>.s		create an assembly listing
-# make <file>.x		create an executable file, assuming standalone
-#			source
-# make <file>.i		create a preprocessed file (for .F)
-# make <file>.i90	create a preprocessed file (for .F90)
+# make <file>.opt       create an optimization report
+# make <file>.o         create an object file
+# make <file>.s         create an assembly listing
+# make <file>.x         create an executable file, assuming standalone
+#                       source
+# make <file>.i         create a preprocessed file (for .F)
+# make <file>.i90       create a preprocessed file (for .F90)
 
 # The macro TMPFILES is provided to slate files like the above for removal.
 
 RM = rm -f
+SHELL = /bin/sh
 TMPFILES = .*.m *.B *.L *.i *.i90 *.l *.s *.mod *.opt
 
 .SUFFIXES: .F .F90 .H .L .T .f .f90 .h .i .i90 .l .o .s .opt .x

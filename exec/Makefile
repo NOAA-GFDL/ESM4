@@ -4,7 +4,15 @@ BUILDROOT = $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 SRCROOT = $(abspath $(BUILDROOT)../src)/ 
 
-MK_TEMPLATE = $(BUILDROOT)templates/intel.mk
+#MK_TEMPLATE = $(BUILDROOT)templates/intel.mk
+ifeq ($(gcc),on)
+  MK_TEMPLATE = $(BUILDROOT)templates/gnu.mk
+else
+  MK_TEMPLATE = $(BUILDROOT)templates/intel.mk
+endif
+ifeq ($(SH),sh)
+  SHELL=/bin/sh
+endif
 
 include $(MK_TEMPLATE)
 
