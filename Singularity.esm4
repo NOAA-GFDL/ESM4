@@ -16,7 +16,6 @@ spack:
     install_missing_compilers: true
     install_tree: /opt/software
   specs:
-  - gcc@10.2.0%gcc@10.2.0 target=x86_64
   - mpich@3.3.2%gcc@10.2.0 target=x86_64
   - hdf5@1.12.0~mpi+fortran %gcc@10.2.0 target=x86_64
   - netcdf-c@4.7.4~mpi %gcc@10.2.0 target=x86_64
@@ -57,6 +56,7 @@ Stage: final
   /opt/software /opt
   /opt/view /opt
   /opt/spack-environment/environment_modifications.sh /opt/spack-environment/environment_modifications.sh
+  /opt/ESM4
 
 %post
   # Update, install and cleanup of system packages needed at run-time
