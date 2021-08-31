@@ -7,7 +7,7 @@ Stage: build
   # Install all the required software
   . /opt/spack/share/spack/setup-env.sh
   # Install ESM4
-  git clone --recursive -b 2021.02 https://github.com/NOAA-GFDL/ESM4.git && cd ESM4/exec
+  git clone --recursive -b 2021.03 https://github.com/NOAA-GFDL/ESM4.git && cd ESM4/exec
   make gcc=on OPENMP=on SH=sh CLUBB=off
   mkdir -p /opt/ESM4
   cp esm4.1.x /opt/ESM4
