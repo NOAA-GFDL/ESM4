@@ -16,6 +16,16 @@ git clone --recursive https://github.com/NOAA-GFDL/ESM4.git
 ```
 
 ## Compiling
+
+### Building the container
+The [container folder](container) provides example Dockerfiles and Signularity
+definition files to use to build AM4 containers using either GCC/GFORTAN or
+Intel oneAPI. There is a script that can be used to build the intel
+singularity containers, and the first step of this script can be used with the
+other GFDL climate models.
+
+
+### Building from source
 This model was originally compiled and run with the intel16 compiler.
 It is recommended that you compile with an intel compiler.
 
@@ -42,7 +52,7 @@ make REPRO=on OPENMP=on
 ```
 To compile with *-O0* and debug flags do
 ```bash
-make DEBUG=on OPENMP=on
+make BLD_TYPE=DEBUG OPENMP=on
 ```
 Compiling with openMP is optional.
 
