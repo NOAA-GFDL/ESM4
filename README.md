@@ -1,9 +1,9 @@
 # Earth System Model 4
 
 ## What Is Included
-* [src/]((https://github.com/NOAA-GFDL/ESM4/tree/master/src) source code for the ESM4 model (all code is in submodules)
-* [exec/]((https://github.com/NOAA-GFDL/ESM4/tree/master/exec) Makefiles to compile the code 
-* [run/]((https://github.com/NOAA-GFDL/ESM4/tree/master/run) Simple run script
+* [src]((https://github.com/NOAA-GFDL/ESM4/tree/master/src) source code for the ESM4 model (all code is in submodules)
+* [exec]((https://github.com/NOAA-GFDL/ESM4/tree/master/exec) Makefiles to compile the code 
+* [run]((https://github.com/NOAA-GFDL/ESM4/tree/master/run) Simple run script
 
 ## Cloning
 To clone the ESM4 model please use the recursive option
