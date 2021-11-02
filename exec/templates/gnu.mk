@@ -231,7 +231,7 @@ TMPFILES = .*.m *.B *.L *.i *.i90 *.l *.s *.mod *.opt
 .F.T:
 	$(FC) $(CPPDEFS) $(FPPFLAGS) $(FFLAGS) -c -cif $*.F
 .F.f:
-	$(FC) $(CPPDEFS) $(FPPFLAGS) -EP $*.F > $*.f
+	$(FC) $(CPPDEFS) $(FPPFLAGS) -E -P $*.F > $*.f
 .F.i:
 	$(FC) $(CPPDEFS) $(FPPFLAGS) -P $*.F
 .F.o:
@@ -249,7 +249,7 @@ TMPFILES = .*.m *.B *.L *.i *.i90 *.l *.s *.mod *.opt
 .F90.T:
 	$(FC) $(CPPDEFS) $(FPPFLAGS) $(FFLAGS) -c -cif $*.F90
 .F90.f90:
-	$(FC) $(CPPDEFS) $(FPPFLAGS) -EP $*.F90 > $*.f90
+	$(FC) $(CPPDEFS) $(FPPFLAGS) -E -P $*.F90 > $*.f90
 .F90.i90:
 	$(FC) $(CPPDEFS) $(FPPFLAGS) -P $*.F90
 .F90.o:
