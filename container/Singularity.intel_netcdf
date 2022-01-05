@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: intel/oneapi-hpckit:2021.2-devel-ubuntu18.04 
+From: intel/oneapi-hpckit:2021.4-devel-ubuntu18.04 
 Stage: build
 
 %post
@@ -26,8 +26,8 @@ Stage: build
 # apt update -y
 # apt install -y intel-basekit intel-hpckit
 ##
- FC=ifort 
- CC=icc
+ FC=mpiifort 
+ CC=mpiicc
 
  build=/opt
  IO_LIBS=${build}/io_libs
@@ -41,14 +41,14 @@ Stage: build
  ./configure --prefix=${IO_LIBS} 
  make 
  make -j 20 install
-# CC "icc -fPIC"
+# CC "mpiicc -fPIC"
  cd $build 
  szip="szip-2.1.1" 
  rm -rf szip* 
  wget https://support.hdfgroup.org/ftp/lib-external/szip/2.1.1/src/szip-2.1.1.tar.gz 
  tar xzf szip-2.1.1.tar.gz 
  cd $szip 
- ./configure FC=ifort CC=icc --prefix=${IO_LIBS} CPPDEFS="-fPIC" 
+ ./configure FC=mpiifort CC=mpiicc --prefix=${IO_LIBS} CPPDEFS="-fPIC" 
  make 
  make -j 20 install
  cd $build 
@@ -57,7 +57,7 @@ Stage: build
  wget https://curl.haxx.se/download/${curl}.tar.gz 
  tar xzf ${curl}.tar.gz 
  cd $curl 
- ./configure FC=ifort CC=icc --prefix=${IO_LIBS} 
+ ./configure FC=mpiifort CC=mpiicc --prefix=${IO_LIBS} 
  make 
  make -j 20 install
 
@@ -70,8 +70,8 @@ Stage: build
  wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/${hdf5}/src/${hdf5}.tar.gz 
  tar xzf ${hdf5}.tar.gz 
  cd $hdf5 
- hdf5_opts="FC=ifort CC=icc LDFLAGS=-L/opt/io_libs/lib --prefix=/opt/hdf5 --enable-fortran --enable-hl --with-zlib=/opt/io_libs/lib"
- ./configure FC=ifort CC=icc LDFLAGS='-L/opt/io_libs/lib -lz' --prefix=/opt/hdf5 --enable-fortran --enable-hl --with-zlib=/opt/io_libs --with-szib=/opt/io_libs 
+ hdf5_opts="FC=mpiifort CC=mpiicc LDFLAGS=-L/opt/io_libs/lib --prefix=/opt/hdf5 --enable-fortran --enable-hl --with-zlib=/opt/io_libs/lib"
+ ./configure FC=mpiifort CC=mpiicc LDFLAGS='-L/opt/io_libs/lib -lz' --prefix=/opt/hdf5 --enable-fortran --enable-hl --with-zlib=/opt/io_libs --with-szib=/opt/io_libs 
  make -j 20 install 
  echo "HDF5 finished building"
 

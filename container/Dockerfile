@@ -6,7 +6,7 @@ RUN . /opt/spack/share/spack/setup-env.sh
 ## Make the ESM4 directory
 RUN mkdir -p /opt/ESM4
 ## Build the ESM4 from github
-RUN git clone --recursive https://github.com/NOAA-GFDL/ESM4.git -b 2021.03 \
+RUN git clone --recursive https://github.com/NOAA-GFDL/ESM4.git -b release/2021.3.1 \
     && cd ESM4/exec \ 
     && make gcc=on HDF_INCLUDE=-I/opt/hdf5/include SH=sh CLUBB=off \
     && cp esm4.1.x /opt/ESM4 \

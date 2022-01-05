@@ -101,7 +101,7 @@ ENV LIBRARY_PATH=${LD_LIBRARY_PATH}
 
 ## Build the model
 RUN mkdir -p /opt/ESM4
-RUN git clone --recursive https://github.com/NOAA-GFDL/ESM4.git -b 2021.03 \
+RUN git clone --recursive https://github.com/NOAA-GFDL/ESM4.git -b release/2021.3.1 \
  && cd ESM4/exec \
  && make HDF_INCLUDE=-I/opt/hdf5/include HDF_LIBS="-L/opt/hdf5/lib -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran" SH=sh \
  && cp esm4.1.x /opt/ESM4 \

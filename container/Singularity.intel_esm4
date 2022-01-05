@@ -6,7 +6,7 @@ Stage: build
 %post
  cd /opt
 ## Build the ESM4 from github
- git clone --recursive https://github.com/NOAA-GFDL/ESM4.git -b 2021.03
+ git clone --recursive https://github.com/NOAA-GFDL/ESM4.git -b release/2021.3.1
      cd ESM4/exec 
      make -j 20 HDF_INCLUDE=-I/opt/hdf5/include HDF_LIBS="-L/opt/hdf5/lib -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran"
      cp esm4.1.x /opt/ESM4 
