@@ -118,7 +118,7 @@ FFLAGS_TEST := $(FFLAGS_OPT)
 CFLAGS_TEST := $(CFLAGS_OPT)
 
 # Linking flags
-LDFLAGS := -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran `nc-config --libs` `nf-config --flibs`
+LDFLAGS := -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5_hl_fortran `nc-config --libs` `nf-config --flibs`
 LDFLAGS_OPENMP := -fopenmp
 LDFLAGS_VERBOSE :=
 LDFLAGS_COVERAGE :=
