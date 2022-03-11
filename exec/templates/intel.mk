@@ -105,7 +105,7 @@ ifdef HDF_INCLUDE
 FPPFLAGS += $(HDF_INCLUDE)
 endif
 # Base set of Fortran compiler flags
-FFLAGS := -fno-alias -stack_temps -safe_cray_ptr -ftz -assume byterecl -i4 -r8 -nowarn -g -sox -traceback
+FFLAGS := -fno-alias -stack-temps -safe-cray-ptr -ftz -assume byterecl -i4 -r8 -nowarn -g -sox -traceback
 
 # Flags based on perforance target (production (OPT), reproduction (REPRO), or debug (DEBUG)
 FFLAGS_PROD = -fp-model source -O3
@@ -178,7 +178,7 @@ LIBS += $(MPI_LIBS)
 endif
 # HDF library flags
 #ifndef HDF_LIBS
-#LIBS += -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran
+#LIBS += -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5_hl_fortran
 #else
 #LIBS += $(HDF_LIBS)
 #endif

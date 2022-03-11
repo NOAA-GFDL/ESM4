@@ -19,7 +19,7 @@ include $(MK_TEMPLATE)
 SUBMAKEFLAGS = BUILDROOT=$(BUILDROOT) SRCROOT=$(SRCROOT) MK_TEMPLATE=$(MK_TEMPLATE) BLD_TYPE=$(BLD_TYPE)
 
 esm4.1.x: coupler/libcoupler.a atmos_dyn/libatmos_dyn.a sis2/libsis2.a atmos_cubed_sphere/libatmos_cubed_sphere.a mom6/libmom6.a icebergs/libicebergs.a lm4P/liblm4P.a atmos_phys/libatmos_phys.a fms/build/libFMS/.libs/libFMS.a
-	$(LD) $^ $(LDFLAGS) -Lfms/build -Lfms/build/libFMS/.libs -lFMS -o $@  $(STATIC_LIBS)
+	$(LD) $^ $(LDFLAGS) -o $@  $(STATIC_LIBS)
 
 fms/build/libFMS/.libs/libFMS.a:  FORCE
 	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=fms $(@F) 

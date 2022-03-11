@@ -10,12 +10,12 @@ include $(MK_TEMPLATE)
 all: libFMS.a
 
 libFMS.a: folder configure build 
-	ln -sf build/libFMS/.libs/libFMS.a libFMS.a
+	echo path to libFMS is ${PWD}/build/libFMS/.libs/libFMS.a
 folder:
 	mkdir -p build && cd build && autoreconf -i ${SRCROOT}/FMS 
 configure: folder
 	cd build && ${SRCROOT}/FMS/configure FC="$(FC)" CC="$(CC)" FCFLAGS="$(FFLAGS)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) $(CPPDEFS) $(FPPFLAGS)" FPPFLAGS="$(FPPFLAGS)" LIBS="$(LIBS)" 
 build: configure
-	cd build && make
+	cd build && make 
 clean:
 	rm -rf build *.a* *.log
