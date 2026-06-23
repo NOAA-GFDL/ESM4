@@ -137,7 +137,7 @@ elif [[ $flavor =~ "esm45" ]] ; then
     mkdir -p $machine_name-$platform/$target/lm42
     pushd $machine_name-$platform/$target/lm42
     rm -f path_names
-    $srcdir/mkmf/bin/list_paths $srcdir/lm4P/
+    $srcdir/mkmf/bin/list_paths $srcdir/lm4p/
     #we need to pass $srcdir/FMS/include to find fms_platforms.h
     $srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I$srcdir/FMS/include" -p liblm42.a -c " " path_names
 
@@ -168,7 +168,7 @@ elif [[ $flavor =~ "esm45" ]] ; then
     mkdir -p $machine_name-$platform/$target/fv3
     pushd $machine_name-$platform/$target/fv3
     rm -f path_names
-    $srcdir/mkmf/bin/list_paths $srcdir/GFDL_atmos_cubed_sphere/{driver/GFDL,model,GFDL_tools,tools}/ $srcdir/atmos_drv/coupled/
+    $srcdir/mkmf/bin/list_paths $srcdir/GFDL_atmos_cubed_sphere/{driver/GFDL,model,GFDL_tools,tools}/ $srcdir/atmos_drivers/coupled/
     $srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I$srcdir/FMS/include -I../am42" -p libfv3.a -c "-DCLIMATE_NUDGE -DSPMD" path_names
 
     make $makeflags $openmpflag libfv3.a
