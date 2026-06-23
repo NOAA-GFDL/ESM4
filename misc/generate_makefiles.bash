@@ -2,7 +2,7 @@
 #This tool is used to generate the Makefiles in exec/ dir via:
 #cd repo_root; ./misc/generate_makefiles.bash
 #
-mk_template='../../misc/build_templates/ncrc5/intel.mk'
+mk_template='../../misc/tested_platforms/ncrc5/intel.mk'
 srcdir='../../src'
 echo $srcdir
 dest='testexec'

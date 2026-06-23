@@ -1,10 +1,10 @@
 #!/bin/bash -x
 #
 #This is a tool to help users compile and biuld the available GFDL models from scratch on any Linux platform.
-#It has been tested for the platforms that appear in the build_template/ directory.
-#Users can add their own platforms under build_template/ by adding the appropriate .env and .mk files and use this utility to build.
-#E.g., if users have a platform called foo_machine with bar_compiler  they need to add build_template/foo_machine directory andd
-#build_template/foo_machine/bar_compiler.env, build_template/foo_machine/bar_compiler.mk files under it, then use
+#It has been tested for the platforms that appear in the tested_platforms/ directory.
+#Users can add their own platforms under tested_platforms/ by adding the appropriate .env and .mk files and use this utility to build.
+#E.g., if users have a platform called foo_machine with bar_compiler  they need to add tested_platforms/foo_machine directory andd
+#tested_platforms/foo_machine/bar_compiler.env, tested_platforms/foo_machine/bar_compiler.mk files under it, then use
 # scratch-build.bash -m foo_machine -p bar_compiler -t prod -f esm45 -d PATH_TO_BUILD_DIR
 #
 machine_name="ncrc5"
@@ -36,10 +36,10 @@ rootdir=`dirname $0`
 abs_rootdir=`cd $rootdir/.. && pwd`
 srcdir=$abs_rootdir/src
 echo $srcdir
-mkmf_template=$abs_rootdir/misc/build_templates/$machine_name/$platform.mk
+mkmf_template=$abs_rootdir/misc/tested_platforms/$machine_name/$platform.mk
 #load modules
 source $MODULESHOME/init/bash
-source $abs_rootdir/misc/build_templates/$machine_name/$platform.env
+source $abs_rootdir/misc/tested_platforms/$machine_name/$platform.env
 
 makeflags="-j 4  NETCDF=3"
 openmpflag=""

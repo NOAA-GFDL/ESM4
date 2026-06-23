@@ -27,8 +27,8 @@ abs_rootdir=`cd $rootdir && pwd`
 
 #load modules
 source $MODULESHOME/init/bash
-source $abs_rootdir/build_templates/$machine_name/$platform.env
-. $abs_rootdir/build_templates/$machine_name/$platform.env
+source $abs_rootdir/tested_platforms/$machine_name/$platform.env
+. $abs_rootdir/tested_platforms/$machine_name/$platform.env
 
 makeflags="-j 4  NETCDF=3"
 
