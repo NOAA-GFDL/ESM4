@@ -104,7 +104,7 @@ ENV PATH=/opt/spack-environment/.spack-env/view/bin:$PATH
 #RUN chmod 744 /apps/ESM4/src/checkout.sh 
 RUN mkdir -p /apps
 WORKDIR /apps
-RUN git clone --recursive https://github.com/nikizadehgfdl/ESM4.git -b esm45_pubrel
+RUN git clone --recursive https://github.com/thomas-robinson/ESM4.git -b esm45_pubrel_containertest
 
 #RUN \ 
 #/apps/ESM4/src/checkout.sh 
