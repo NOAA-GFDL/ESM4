@@ -1,6 +1,5 @@
 FROM intel/oneapi-hpckit:2025.3.0-0-devel-ubuntu24.04 as builder
 LABEL maintainer="HPC-ME Development"
-
 ############## Set up build environment#################
 RUN sed -i -e 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true
 RUN apt-get update -y \
@@ -100,19 +99,15 @@ ENV PATH=/opt/spack-environment/.spack-env/view/bin:$PATH
 ## Model Build
 
 ## Recursive clone of the ESM4.5 repository in /apps
-#COPY tmp/hpcme.intel25/checkout.sh /apps/ESM4/src/checkout.sh 
-#RUN chmod 744 /apps/ESM4/src/checkout.sh 
 RUN mkdir -p /apps
 WORKDIR /apps
 WORKDIR /apps
 RUN git clone --recursive https://github.com/thomas-robinson/ESM4.git -b esm45_pubrel_containertest
-
-#RUN \ 
-#/apps/ESM4/src/checkout.sh 
+## Get mkmf to build the Makefiles
 RUN cd /apps \ 
  && git clone --recursive https://github.com/NOAA-GFDL/mkmf \ 
  && cp mkmf/bin/* /usr/local/bin 
-
+## Build the Makefiles for the components with mkfm
 RUN bld_dir=/apps/ESM4/exec \ 
  && src_dir=/apps/ESM4/src \ 
  && mkmf_template=/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk \ 
@@ -169,25 +164,17 @@ RUN bld_dir=/apps/ESM4/exec \
  && list_paths -l -o $bld_dir/FMScoupler/pathnames_FMScoupler $src_dir/FMScoupler/shared $src_dir/FMScoupler/full  \ 
  && cd $bld_dir/FMScoupler \ 
  && mkmf -m Makefile -a $src_dir -b $bld_dir -p libFMScoupler.a -t $mkmf_template -c "" -o "-I$bld_dir/FMS -I$bld_dir/GFDL_atmos_cubed_sphere -I$bld_dir/atmos_drivers -I$bld_dir/atmos_phys -I$bld_dir/lm4p -I$bld_dir/ice_param -I$bld_dir/ocean " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include -IMOM6/pkg/CVMix-src/include -IMOM6/src/framework $bld_dir/FMScoupler/pathnames_FMScoupler 
-#RUN \
-#   cd /apps/ESM4/exec \
-#&& make -j 4 PROD=on OPENMP=on FMS/libFMS.a
-#&& make -j 4 PROD=on OPENMP=on atmos_drivers/libatmos_drivers.a
-#&& make -j 4 PROD=on OPENMP=on ice_param/libice_param.a
-#&& make -j 4 PROD=on OPENMP=on 
-RUN rm /apps/ESM4/exec/Makefile
-COPY Makefile /apps/ESM4/exec/Makefile
+## Build model
 RUN \ 
  cd /apps/ESM4/exec && make -j 4 PROD=on OPENMP=on 
-
-
+############################################################
+## Multi-stage runtime container
 FROM intel/oneapi-runtime:latest as final 
+## Copy code, executable, and dependencies
 COPY --from=builder  /apps/ESM4/src /apps/ESM4/src
 COPY --from=builder /apps/ESM4/exec /apps/ESM4/exec
-COPY --from=builder /opt/software /opt/software
-COPY --from=builder /opt/views /opt/views
-RUN mkdir -p /apps/bin \ 
- && ln -sf /apps/ESM4/exec/execrunscript.sh /apps/bin/execrunscript.sh 
+COPY --from=builder /opt/spack/opt/spack /opt/spack/opt/spack
+COPY --from=builder /opt/spack-environment/.spack-env/._view/wtlopyfb6nxfsvytbfs4cihi244cuhbd /opt/views
 ENV PATH=/opt/views/view/bin:/apps/ESM4/exec:/apps/bin:$PATH
 ENV LD_LIBRARY_PATH /opt/views/view/lib:$LD_LIBRARY_PATH
 ENV LIBRARY_PATH /opt/views/view/lib:$LIBRARY_PATH
