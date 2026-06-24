@@ -104,6 +104,7 @@ ENV PATH=/opt/spack-environment/.spack-env/view/bin:$PATH
 #RUN chmod 744 /apps/ESM4/src/checkout.sh 
 RUN mkdir -p /apps
 WORKDIR /apps
+WORKDIR /apps
 RUN git clone --recursive https://github.com/thomas-robinson/ESM4.git -b esm45_pubrel_containertest
 
 #RUN \ 
@@ -136,42 +137,46 @@ RUN bld_dir=/apps/ESM4/exec \
 RUN bld_dir=/apps/ESM4/exec \ 
  && src_dir=/apps/ESM4/src \ 
  && mkmf_template=/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk \ 
- && mkdir -p $bld_dir/atmos_drv \ 
- && list_paths -l -o $bld_dir/atmos_drv/pathnames_atmos_drv $src_dir/atmos_drv/coupled  \ 
- && cd $bld_dir/atmos_drv \ 
- && mkmf -m Makefile -a $src_dir -b $bld_dir -p libatmos_drv.a -t $mkmf_template -c "-DCLIMATE_NUDGE -DSPMD" -o "-I$bld_dir/FMS -I$bld_dir/atmos_phys -I$bld_dir/GFDL_atmos_cubed_sphere " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include $bld_dir/atmos_drv/pathnames_atmos_drv 
+ && mkdir -p $bld_dir/atmos_drivers \ 
+ && list_paths -l -o $bld_dir/atmos_drivers/pathnames_atmos_drivers $src_dir/atmos_drivers/coupled  \ 
+ && cd $bld_dir/atmos_drivers \ 
+ && mkmf -m Makefile -a $src_dir -b $bld_dir -p libatmos_drivers.a -t $mkmf_template -c "-DCLIMATE_NUDGE -DSPMD" -o "-I$bld_dir/FMS -I$bld_dir/atmos_phys -I$bld_dir/GFDL_atmos_cubed_sphere " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include $bld_dir/atmos_drivers/pathnames_atmos_drivers 
 RUN bld_dir=/apps/ESM4/exec \ 
  && src_dir=/apps/ESM4/src \ 
  && mkmf_template=/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk \ 
- && mkdir -p $bld_dir/lm4P \ 
- && list_paths -l -o $bld_dir/lm4P/pathnames_lm4P $src_dir/lm4P  \ 
- && cd $bld_dir/lm4P \ 
- && mkmf -m Makefile -a $src_dir -b $bld_dir -p liblm4P.a -t $mkmf_template -c "-Duse_netCDF -DINTERNAL_FILE_NML" -o "-I$bld_dir/FMS " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include $bld_dir/lm4P/pathnames_lm4P 
+ && mkdir -p $bld_dir/lm4p \ 
+ && list_paths -l -o $bld_dir/lm4p/pathnames_lm4p $src_dir/lm4p  \ 
+ && cd $bld_dir/lm4p \ 
+ && mkmf -m Makefile -a $src_dir -b $bld_dir -p liblm4p.a -t $mkmf_template -c "-Duse_netCDF -DINTERNAL_FILE_NML" -o "-I$bld_dir/FMS " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include $bld_dir/lm4p/pathnames_lm4p 
 RUN bld_dir=/apps/ESM4/exec \ 
  && src_dir=/apps/ESM4/src \ 
  && mkmf_template=/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk \ 
  && mkdir -p $bld_dir/ocean \ 
- && list_paths -l -o $bld_dir/ocean/pathnames_ocean $src_dir/ocean/om5-config/src/MOM6/config_src/infra/FMS2 $src_dir/ocean/om5-config/src/MOM6/config_src/memory/dynamic_nonsymmetric $src_dir/ocean/om5-config/src/MOM6/config_src/drivers/FMS_cap $src_dir/ocean/om5-config/src/MOM6/src/* $src_dir/ocean/om5-config/src/MOM6/src/*/* $src_dir/ocean/om5-config/src/MOM6/config_src/external/ODA_hooks $src_dir/ocean/om5-config/src/MOM6/config_src/external/database_comms $src_dir/ocean/om5-config/src/MOM6/config_src/external/drifters $src_dir/ocean/om5-config/src/MOM6/config_src/external/stochastic_physics $src_dir/ocean/om5-config/src/MOM6/config_src/external/MARBL $src_dir/ocean/ocean_BGC/generic_tracers $src_dir/ocean/ocean_BGC/mocsy/src  \ 
+ && list_paths -l -o $bld_dir/ocean/pathnames_ocean $src_dir/MOM6/config_src/infra/FMS2 $src_dir/MOM6/config_src/memory/dynamic_nonsymmetric $src_dir/MOM6/config_src/drivers/FMS_cap $src_dir/MOM6/src/* $src_dir/MOM6/src/*/* $src_dir/MOM6/config_src/external/ODA_hooks $src_dir/MOM6/config_src/external/database_comms $src_dir/MOM6/config_src/external/drifters $src_dir/MOM6/config_src/external/stochastic_physics $src_dir/MOM6/config_src/external/MARBL $src_dir/ocean_BGC/generic_tracers $src_dir/ocean_BGC/mocsy/src  \ 
  && cd $bld_dir/ocean \ 
- && mkmf -m Makefile -a $src_dir -b $bld_dir -p libocean.a -t $mkmf_template -c "-DMAX_FIELDS_=600 -DNOT_SET_AFFINITY -D_USE_MOM6_DIAG -D_USE_GENERIC_TRACER  -DUSE_PRECISION=2" -o "-I$bld_dir/FMS " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include -Iocean/om5-config/src/MOM6/pkg/CVMix-src/include -Iocean/om5-config/src/MOM6/src/framework $bld_dir/ocean/pathnames_ocean 
+ && mkmf -m Makefile -a $src_dir -b $bld_dir -p libocean.a -t $mkmf_template -c "-DMAX_FIELDS_=600 -DNOT_SET_AFFINITY -D_USE_MOM6_DIAG -D_USE_GENERIC_TRACER  -DUSE_PRECISION=2" -o "-I$bld_dir/FMS " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include -IMOM6/pkg/CVMix-src/include -IMOM6/src/framework $bld_dir/ocean/pathnames_ocean 
 RUN bld_dir=/apps/ESM4/exec \ 
  && src_dir=/apps/ESM4/src \ 
  && mkmf_template=/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk \ 
  && mkdir -p $bld_dir/ice_param \ 
- && list_paths -l -o $bld_dir/ice_param/pathnames_ice_param $src_dir/ocean/om5-config/src/SIS2/config_src/dynamic $src_dir/ocean/om5-config/src/SIS2/config_src/external/Icepack_interfaces $src_dir/ocean/om5-config/src/SIS2/src $src_dir/ocean/om5-config/src/icebergs/src $src_dir/ice_param  \ 
+ && list_paths -l -o $bld_dir/ice_param/pathnames_ice_param $src_dir/SIS2/config_src/dynamic $src_dir/SIS2/config_src/external/Icepack_interfaces $src_dir/SIS2/src $src_dir/icebergs/src $src_dir/ice_param  \ 
  && cd $bld_dir/ice_param \ 
- && mkmf -m Makefile -a $src_dir -b $bld_dir -p libice_param.a -t $mkmf_template -c "-DUSE_FMS2_IO" -o "-I$bld_dir/FMS -I$bld_dir/ocean " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include -Iocean/om5-config/src/MOM6/pkg/CVMix-src/include -Iocean/om5-config/src/MOM6/src/framework $bld_dir/ice_param/pathnames_ice_param 
+ && mkmf -m Makefile -a $src_dir -b $bld_dir -p libice_param.a -t $mkmf_template -c "-DUSE_FMS2_IO" -o "-I$bld_dir/FMS -I$bld_dir/ocean " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include -IMOM6/pkg/CVMix-src/include -IMOM6/src/framework $bld_dir/ice_param/pathnames_ice_param 
 RUN bld_dir=/apps/ESM4/exec \ 
  && src_dir=/apps/ESM4/src \ 
  && mkmf_template=/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk \ 
  && mkdir -p $bld_dir/FMScoupler \ 
  && list_paths -l -o $bld_dir/FMScoupler/pathnames_FMScoupler $src_dir/FMScoupler/shared $src_dir/FMScoupler/full  \ 
  && cd $bld_dir/FMScoupler \ 
- && mkmf -m Makefile -a $src_dir -b $bld_dir -p libFMScoupler.a -t $mkmf_template -c "" -o "-I$bld_dir/FMS -I$bld_dir/GFDL_atmos_cubed_sphere -I$bld_dir/atmos_drv -I$bld_dir/atmos_phys -I$bld_dir/lm4P -I$bld_dir/ice_param -I$bld_dir/ocean " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include -Iocean/om5-config/src/MOM6/pkg/CVMix-src/include -Iocean/om5-config/src/MOM6/src/framework $bld_dir/FMScoupler/pathnames_FMScoupler 
-COPY tmp/hpcme.intel25/execrunscript.sh /apps/ESM4/exec/execrunscript.sh
-RUN chmod 744 /apps/ESM4/exec/execrunscript.sh
-RUN mkdir -p /apps/bin \
- && ln -sf /apps/ESM4/exec/execrunscript.sh /apps/bin/execrunscript.sh 
+ && mkmf -m Makefile -a $src_dir -b $bld_dir -p libFMScoupler.a -t $mkmf_template -c "" -o "-I$bld_dir/FMS -I$bld_dir/GFDL_atmos_cubed_sphere -I$bld_dir/atmos_drivers -I$bld_dir/atmos_phys -I$bld_dir/lm4p -I$bld_dir/ice_param -I$bld_dir/ocean " -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include -IMOM6/pkg/CVMix-src/include -IMOM6/src/framework $bld_dir/FMScoupler/pathnames_FMScoupler 
+#RUN \
+#   cd /apps/ESM4/exec \
+#&& make -j 4 PROD=on OPENMP=on FMS/libFMS.a
+#&& make -j 4 PROD=on OPENMP=on atmos_drivers/libatmos_drivers.a
+#&& make -j 4 PROD=on OPENMP=on ice_param/libice_param.a
+#&& make -j 4 PROD=on OPENMP=on 
+RUN rm /apps/ESM4/exec/Makefile
+COPY Makefile /apps/ESM4/exec/Makefile
 RUN \ 
  cd /apps/ESM4/exec && make -j 4 PROD=on OPENMP=on 
 
