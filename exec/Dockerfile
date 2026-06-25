@@ -101,7 +101,6 @@ ENV PATH=/opt/spack-environment/.spack-env/view/bin:$PATH
 ## Recursive clone of the ESM4.5 repository in /apps
 RUN mkdir -p /apps
 WORKDIR /apps
-WORKDIR /apps
 RUN git clone --recursive https://github.com/thomas-robinson/ESM4.git -b esm45_pubrel_containertest
 ## Get mkmf to build the Makefiles
 RUN cd /apps \ 
@@ -169,13 +168,18 @@ RUN \
  cd /apps/ESM4/exec && make -j 4 PROD=on OPENMP=on 
 ############################################################
 ## Multi-stage runtime container
-FROM intel/oneapi-runtime:latest as final 
+FROM intel/oneapi-runtime:2025.3.0-0-devel-ubuntu24.04 as final 
 ## Copy code, executable, and dependencies
 COPY --from=builder  /apps/ESM4/src /apps/ESM4/src
 COPY --from=builder /apps/ESM4/exec /apps/ESM4/exec
 COPY --from=builder /opt/spack/opt/spack /opt/spack/opt/spack
 COPY --from=builder /opt/spack-environment/.spack-env/._view/wtlopyfb6nxfsvytbfs4cihi244cuhbd /opt/views
-ENV PATH=/opt/views/view/bin:/apps/ESM4/exec:/apps/bin:$PATH
-ENV LD_LIBRARY_PATH /opt/views/view/lib:$LD_LIBRARY_PATH
-ENV LIBRARY_PATH /opt/views/view/lib:$LIBRARY_PATH
+ENV PATH=/opt/views/bin:/apps/ESM4/exec:/apps/bin:$PATH
+ENV LD_LIBRARY_PATH /opt/intel/oneapi/redist/lib/intel64:/opt/views/lib:$LD_LIBRARY_PATH
+ENV LIBRARY_PATH /opt/intel/oneapi/redist/lib/intel64:/opt/views/lib:$LIBRARY_PATH
+ENV PKG_CONFIG_PATH=/opt/intel/oneapi/redist/lib/pkgconfig
+ENV CMAKE_PREFIX_PATH=/opt/intel/oneapi/redist
+ENV CPLUS_INCLUDE_PATH=/opt/intel/oneapi/redist/include:/opt/intel/oneapi/redist/include/dal
+ENV DAL_MAJOR_BINARY=3
+ENV DAL_MINOR_BINARY=0
 ENTRYPOINT ["/bin/bash"]
