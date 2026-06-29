@@ -21,9 +21,8 @@ git clone --recursive https://github.com/NOAA-GFDL/ESM4.git
 There is a container provided that has the application used to 
 run the ESM4.5 model. The container for this model can be pulled 
 using a container tool. Here is an example using apptainer
-# This needs to be filled in
 ```
-apptainer pull
+apptainer pull docker://ghcr.io/noaa-gfdl/esm4:esm4.5
 ```
 This is an MPI application which is built using Intel ifx and icx
 compilers with intel-mpi for an x86 system.  The container *should*
