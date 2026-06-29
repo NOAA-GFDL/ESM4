@@ -72,9 +72,10 @@ fi
 mkdir -p $destination
 cd $destination
 pwd
+exec_dir=$machine_name-$platform/$target
 ##Make fms lib
-mkdir -p $machine_name-$platform/$target/fms
-pushd $machine_name-$platform/$target/fms
+mkdir -p $exec_dir/fms
+pushd $exec_dir/fms
 rm -f path_names
 $srcdir/mkmf/bin/list_paths $srcdir/FMS/{affinity,amip_interp,column_diagnostics,diag_integral,drifters,horiz_interp,memutils,sat_vapor_pres,topography,astronomy,constants,diag_manager,field_manager,include,monin_obukhov,platform,tracer_manager,axis_utils,coupler,fms,fms2_io,interpolator,mosaic2,random_numbers,time_interp,tridiagonal,block_control,data_override,exchange,mpp,time_manager,string_utils,parser,grid_utils}/ $srcdir/FMS/libFMS.F90
 $srcdir/mkmf/bin/mkmf -t $mkmf_template -p libfms.a -c "-Duse_libMPI -Duse_netCDF -Duse_yaml -DMAXFIELDMETHODS_=600 -DMAXXGRID=1e9" path_names
@@ -88,8 +89,8 @@ fi
 popd
 
 ##Make mom6 lib
-mkdir -p $machine_name-$platform/$target/mom6
-pushd $machine_name-$platform/$target/mom6
+mkdir -p $exec_dir/mom6
+pushd $exec_dir/mom6
 rm -f path_names
 compiler_options_mom6='-DMAX_FIELDS_=600 -DNOT_SET_AFFINITY -D_USE_MOM6_DIAG -D_USE_GENERIC_TRACER  -DUSE_PRECISION=2'
 $srcdir/mkmf/bin/list_paths $srcdir/MOM6/{config_src/infra/FMS2,config_src/memory/dynamic_nonsymmetric,config_src/drivers/FMS_cap,config_src/external/ODA_hooks,config_src/external/database_comms,config_src/external/stochastic_physics,config_src/external/MARBL,config_src/external/drifters,pkg/GSW-Fortran/{modules,toolbox}/,src/{*,*/*}/} $srcdir/FMS/{coupler,include}/ $srcdir/{ocean_BGC/generic_tracers,ocean_BGC/mocsy/src}/
@@ -104,8 +105,8 @@ fi
 
 popd
 ##Make sis2 lib
-mkdir -p $machine_name-$platform/$target/sis2
-pushd $machine_name-$platform/$target/sis2
+mkdir -p $exec_dir/sis2
+pushd $exec_dir/sis2
 rm -f path_names
 compiler_options_sis2='-DUSE_FMS2_IO'
 $srcdir/mkmf/bin/list_paths $srcdir/SIS2/{config_src/dynamic,config_src/external/Icepack_interfaces,src}/ $srcdir/icebergs/src/ $srcdir/ice_param/
@@ -121,8 +122,8 @@ popd
 
 
 if [[ $flavor =~ "om5" ]] ; then
-    mkdir -p $machine_name-$platform/$target/om5
-    pushd $machine_name-$platform/$target/om5
+    mkdir -p $exec_dir/om5
+    pushd $exec_dir/om5
     rm -f path_names
     $srcdir/mkmf/bin/list_paths $srcdir/{atmos_null,land_null,FMScoupler/shared/,FMScoupler/full/}/
 
@@ -134,12 +135,15 @@ if [[ $flavor =~ "om5" ]] ; then
 
 elif [[ $flavor =~ "esm45" ]] ; then
     ##Make land lib
-    mkdir -p $machine_name-$platform/$target/lm42
-    pushd $machine_name-$platform/$target/lm42
+    mkdir -p $exec_dir/lm42
+    pushd $exec_dir/lm42
     rm -f path_names
     $srcdir/mkmf/bin/list_paths $srcdir/lm4p/
-    #we need to pass $srcdir/FMS/include to find fms_platforms.h
-    $srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I$srcdir/FMS/include" -p liblm42.a -c " " path_names
+    #we need to have $srcdir/FMS/include in -o options to find fms_platforms.h
+    #to compile with gcc compilers:
+    # we need to have --use-cpp in mkmf options
+    # we need to have $srcdir/FMS/include in -c options as well
+    $srcdir/mkmf/bin/mkmf -t $mkmf_template --use-cpp -o "-I../fms -I$srcdir/FMS/include" -p liblm42.a -c "-I$srcdir/FMS/include " path_names
 
     make $makeflags $openmpflag liblm42.a
     if [ $? -ne 0 ]; then
@@ -150,8 +154,8 @@ elif [[ $flavor =~ "esm45" ]] ; then
     popd
 
     ##Make atmos_phys lib
-    mkdir -p $machine_name-$platform/$target/am42
-    pushd $machine_name-$platform/$target/am42
+    mkdir -p $exec_dir/am42
+    pushd $exec_dir/am42
     rm -f path_names
     $srcdir/mkmf/bin/list_paths $srcdir/atmos_phys/
     $srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I$srcdir/FMS/include" -p libam42.a -c " " path_names
@@ -165,8 +169,8 @@ elif [[ $flavor =~ "esm45" ]] ; then
     popd
 
     ##Make atmos_dyn lib
-    mkdir -p $machine_name-$platform/$target/fv3
-    pushd $machine_name-$platform/$target/fv3
+    mkdir -p $exec_dir/fv3
+    pushd $exec_dir/fv3
     rm -f path_names
     $srcdir/mkmf/bin/list_paths $srcdir/GFDL_atmos_cubed_sphere/{driver/GFDL,model,GFDL_tools,tools}/ $srcdir/atmos_drivers/coupled/
     $srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I$srcdir/FMS/include -I../am42" -p libfv3.a -c "-DCLIMATE_NUDGE -DSPMD" path_names
@@ -178,14 +182,27 @@ elif [[ $flavor =~ "esm45" ]] ; then
     fi
 
     popd
-    mkdir -p $machine_name-$platform/$target/esm45
-    pushd $machine_name-$platform/$target/esm45
+    mkdir -p $exec_dir/coupler_esm45
+    pushd $exec_dir/coupler_esm45
     rm -f path_names
     $srcdir/mkmf/bin/list_paths $srcdir/{FMScoupler/shared/,FMScoupler/full/}/
+    #
+    #compile and link
+    #
+    #$srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I../mom6 -I../sis2 -I../lm42 -I../am42 -I../fv3" -p esm45 -l "-L../fms -lfms -L../mom6 -lmom6 -L../sis2 -lsis2 -L../lm42 -llm42 -L../am42 -lam42 -L../fv3 -lfv3" -c " " path_names
+    #make $makeflags $openmpflag esm45
+    #exit 0
+    #
+    #Or just compile the coupler and link later
+    #
+    $srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I../mom6 -I../sis2 -I../lm42 -I../am42 -I../fv3" -p libcoupler_esm45.a -c " " path_names
+    make $makeflags $openmpflag libcoupler_esm45.a
+    popd
 
-    compiler_options=''
-    linker_options=''
-    $srcdir/mkmf/bin/mkmf -t $mkmf_template -o "-I../fms -I../mom6 -I../sis2 -I../lm42 -I../am42 -I../fv3" -p esm45 -l "-L../fms -lfms -L../mom6 -lmom6 -L../sis2 -lsis2 -L../lm42 -llm42 -L../am42 -lam42 -L../fv3 -lfv3 $linker_options" -c "$compiler_options" path_names
+    #Make esm45 executable This does not work properly as a Makefile to build everything, it only works if all above libs are already made.
+    mkdir -p $exec_dir/esm45; pushd $exec_dir/esm45
+    ln -s ../coupler_esm45/coupler_main.o . #This is needed only for GNU type compilers
+    $srcdir/mkmf/bin/mkmf -t $mkmf_template -p esm45 -l "../coupler_esm45/libcoupler_esm45.a ../fv3/libfv3.a ../sis2/libsis2.a ../mom6/libmom6.a ../lm42/liblm42.a ../am42/libam42.a ../fms/libfms.a"
 
     make $makeflags $openmpflag esm45
 fi
