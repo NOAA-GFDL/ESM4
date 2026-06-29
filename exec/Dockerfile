@@ -101,7 +101,7 @@ ENV PATH=/opt/spack-environment/.spack-env/view/bin:$PATH
 ## Recursive clone of the ESM4.5 repository in /apps
 RUN mkdir -p /apps
 WORKDIR /apps
-RUN git clone --recursive https://github.com/thomas-robinson/ESM4.git -b esm45_pubrel_containertest
+RUN git clone --recursive https://github.com/NOAA-GFDL/ESM4.git -b main
 ## Get mkmf to build the Makefiles
 RUN cd /apps \ 
  && git clone --recursive https://github.com/NOAA-GFDL/mkmf \ 
