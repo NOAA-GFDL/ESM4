@@ -20,7 +20,7 @@ cd esm45_pubrel_branch
 misc/scratch-build.bash -m ncrc5 -p inteloneapi252 -t prod-openmp -f esm45 -d ./build_esm4.5
 ```
 
-For this command tto work the following files should exist in directory misc/tested_platforms/ncrc5/
+For the above command to work the following files should exist in directory misc/tested_platforms/ncrc5/
 
 misc/tested_platforms/ncrc5/inteloneapi252.env
 #This is a script that is sourced by the tool to gets aware of the compiler location and environment variables.
@@ -35,6 +35,15 @@ misc/tested_platforms/foo/bar.mk
 misc/tested_platforms/foo/bar.env
 and then run 
 misc/scratch-build.bash -m foo -p bar -t prod-openmp -f esm45 -d my_build_path
+
+
+Here are other platforms that the above command worked on
+
+ stellar:
+```bash
+cd esm45_pubrel_branch/misc
+./scratch-build.bash -m stellar -p intel22_openmpi -t prod-openmp -f esm45 -d ../build_esm4.5
+```
 
 ## Model running
 A work directory needed for running the model can be obtained from
