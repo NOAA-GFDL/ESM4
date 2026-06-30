@@ -61,7 +61,7 @@ folder contains a Dockerfile and Makefile that can be used to
 build the model container.  To build the container using podman:
 ```
 cd exec
-podman build -t gfdl_esm:4.5 -f Dockerfile
+podman build -t esm4:esm4.5 -f Dockerfile
 ```
 *NOTE*: you may need to bind a filesystem using the `--volume` 
 option in podman
@@ -70,10 +70,10 @@ If the intended use is to run the container using apptainer, you
 will need to convert the OCI podman container to a docker archive
 and then to a SIF file:
 ```
-podman save -o gfdl_esm-4.5.tar localhost/gfdl_esm:4.5
-apptainer build --disable-cache gfdl_esm-4.5.sif docker-archive://gfdl_esm-4.5.tar
+podman save -o esm4_esm4.5.tar localhost/esm4:esm4.5
+apptainer build --disable-cache esm4_esm4.5.sif docker-archive://esm4_esm4.5.tar
 ```
-You can now copy the gfdl_esm-4.5.sif to your run directory and
+You can now copy the esm4_esm4.5.sif to your run directory and
 use apptainer to launch.
 
 ```
@@ -83,7 +83,7 @@ module load mpich
 export APPTAINER_BINDPATH=/path/to/mpi/lib,/path/to/libfabric/lib
 export APPTAINERENV_LD_LIBRARY_PATH=/path/to/mpi/lib:/path/to/libfabric/lib:\$LD_LIBRARY_PATH
 
-srun --ntasks=768 --cpus-per-task=4 --export=ALL,OMP_NUM_THREADS=4 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/gfdl_esm-4.5.sif /apps/ESM4/exec/esm45.x : --ntasks=5796 --cpus-per-task=1 --export=ALL,OMP_NUM_THREADS=1 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4.5_compile-prod-openmp.sif /apps/ESM45/exec/esm45.x
+srun --ntasks=768 --cpus-per-task=4 --export=ALL,OMP_NUM_THREADS=4 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4_esm4.5.sif /apps/ESM4/exec/esm45.x : --ntasks=5796 --cpus-per-task=1 --export=ALL,OMP_NUM_THREADS=1 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4.5_compile-prod-openmp.sif /apps/ESM45/exec/esm45.x
  
 ```
 ### Building from source
@@ -112,7 +112,7 @@ module load mpich
 export APPTAINER_BINDPATH=/path/to/mpi/lib,/path/to/libfabric/lib
 export APPTAINERENV_LD_LIBRARY_PATH=/path/to/mpi/lib:/path/to/libfabric/lib:\$LD_LIBRARY_PATH
 
-srun --ntasks=768 --cpus-per-task=4 --export=ALL,OMP_NUM_THREADS=4 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/gfdl_esm-4.5.sif /apps/ESM4/exec/esm45.x : --ntasks=5796 --cpus-per-task=1 --export=ALL,OMP_NUM_THREADS=1 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4.5_compile-prod-openmp.sif /apps/ESM45/exec/esm45.x
+srun --ntasks=768 --cpus-per-task=4 --export=ALL,OMP_NUM_THREADS=4 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4_esm4.5.sif /apps/ESM4/exec/esm45.x : --ntasks=5796 --cpus-per-task=1 --export=ALL,OMP_NUM_THREADS=1 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4.5_compile-prod-openmp.sif /apps/ESM45/exec/esm45.x
 ```
 This set up requires a total of 8864 cores to execute the model.
 For assistance with setting up the binds for MPI on your system, you
