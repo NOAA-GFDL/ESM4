@@ -27,7 +27,7 @@
 	url = https://github.com/NOAA-GFDL/icebergs.git
 [submodule "src/ocean_BGC"]
 	path = src/ocean_BGC
-	url = https://github.com/NOAA-CEFI-Regional-Ocean-Modeling/ocean_BGC.git
+	url = https://github.com/NOAA-GFDL/ocean_BGC.git
 [submodule "src/lm4p"]
 	path = src/lm4p
 	url = https://github.com/NOAA-GFDL/lm4.git
