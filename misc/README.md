@@ -16,8 +16,8 @@ The utility scratch-build.bash is based on mkmf and helps the users to build the
 For example to build the executable for ESM4.5 on the machine "gaea" run the command:
 
 ```bash
-cd esm45_pubrel_branch
-misc/scratch-build.bash -m ncrc5 -p inteloneapi252 -t prod-openmp -f esm45 -d ./build_esm4.5
+cd esm45_pubrel_branch/misc
+./scratch-build.bash -m ncrc5 -p inteloneapi252 -t prod-openmp -f esm45 -d ../build
 ```
 
 For the above command to work the following files should exist in directory misc/tested_platforms/ncrc5/
@@ -42,7 +42,13 @@ Here are other platforms that the above command worked on
  stellar:
 ```bash
 cd esm45_pubrel_branch/misc
-./scratch-build.bash -m stellar -p intel22_openmpi -t prod-openmp -f esm45 -d ../build_esm4.5
+./scratch-build.bash -m stellar -p intel22_openmpi -t prod-openmp -f esm45 -d ../build
+```
+
+ tiger3:
+```bash
+cd esm45_pubrel_branch/misc
+./scratch-build.bash -m tiger3 -p inteloneapi26_openmpi -t prod-openmp -f esm45 -d ../build
 ```
 
 ## Model running
