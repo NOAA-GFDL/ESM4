@@ -77,6 +77,11 @@ The container needs to be run on an x86 system with mpich-flavor MPI.
 If your system has openMPI, you will need to use the Dockerfile to build
 your own container.
 
+### Building executable from source (without container)
+It is possible to build this code from source by following the
+workflow of the Dockerfile and adapting the Makefile for your
+system (see misc/README). However, the preferred method for building and running the ESM4.5 is in a container.
+
 ## Model running
 A work directory needed for running the model can be obtained via:
 
@@ -84,6 +89,7 @@ A work directory needed for running the model can be obtained via:
 #WARNING: The file size is 42GB. To get the data and run the model you would need at least 200GB free space.
 wget ftp://data1.gfdl.noaa.gov/users/ESM4/ESM4Documentation/GFDL-ESM4p5/inputData/ESM4.5-picontrol_rundir.tar.gz
 tar zxvf ESM4.5-picontrol_rundir.tar.gz
+run_directory=ESM4.5-picontrol_rundir
 ```
 
 This directory contains input.nml as the namelist, various input tables needed
@@ -91,7 +97,7 @@ for running the model, and model input files in a folder called INPUT/.  There
 is also a directory named RESTART/ that should be empty at the beginning of
 each run.
 
-Below is an example of how to set up your run using the container
+Below is an example of how to set up your run using slurm and the container
 
 ```
 cd $run_directory
@@ -103,10 +109,6 @@ export APPTAINERENV_LD_LIBRARY_PATH=/path/to/mpi/lib:/path/to/libfabric/lib:\$LD
 srun --ntasks=216 --cpus-per-task=2 --export=ALL,OMP_NUM_THREADS=2 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4_esm4.5.sif /apps/ESM4/exec/esm45.x : --ntasks=1720 --cpus-per-task=1 --export=ALL,OMP_NUM_THREADS=1 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4.5_compile-prod-openmp.sif /apps/ESM45/exec/esm45.x
 
 ```
-### Building from source (without container)
-It is possible to build this code from source by following the
-workflow of the Dockerfile and adapting the Makefile for your
-system (see misc/README). However, the preferred method for building and running the ESM4.5 is in a container.
 
 Below is an example of how to set up your run using slurm and the user executable (see the README in misc for instruction to build an executable without using containers):
 ```
@@ -119,13 +121,17 @@ srun --ntasks=216 --cpus-per-task=2 --export=ALL,OMP_NUM_THREADS=2 $exec : --nta
 ```
 
 The above srun command has two executing parts (separated by :) that run concurrently.
+
 The first part is for ATM+LND+ICE processes and needs 432 cores (216 MPI ranks * 2 OPENMP threads).
+
 The second part is for Ocean processes and needs 1720 cores (1720 MPI ranks).
+
 This set up requires a total of 216*2/CORES_PER_NODE + 1720/CORES_PER_NODE nodes to execute.
 The CORES_PER_NODE depends on the user platform setup. E.g., CORES_PER_NODE=192 for ncrc6.
+
 For assistance with setting up the binds for MPI on your system, you should contact you system adminstrators.
 
-A simple slurm script is provided for the platfroms that this model is tested on, e.g., misc/tested_platforms/ncrc5/ESM4.5piControl_runscript.sbatch
+A few simple slurm scripts are provided for the platfroms that this model is tested on, e.g., misc/tested_platforms/ncrc5/ESM4.5piControl_runscript.sbatch
 
 ## Disclaimer
 
