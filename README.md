@@ -54,7 +54,7 @@ using openMPI, you will need to modify the
 ## Compiling
 
 ### Building the container
-The [exec/](https://github.com/NOAA-GFDL/ESM4/tree/main/exec)
+The [exec/](exec/)
 folder contains a Dockerfile and Makefile that can be used to
 build the model container.  To build the container using podman:
 ```

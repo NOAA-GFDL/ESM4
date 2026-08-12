@@ -16,7 +16,7 @@ atm_threads=2
 ocn_ranks=1720
 config=${atm_ranks}x${atm_threads}a_${ocn_ranks}x1o
 date=`date '+%Y%m%d_%H%M'`
-bar=run31days.$date.$SLURM_JOB_ID
+bar=run3days.$date.$SLURM_JOB_ID
 
 echo "Hello world, I am running on node $HOSTNAME"
 sleep 2
