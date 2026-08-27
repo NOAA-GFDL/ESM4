@@ -37,7 +37,7 @@ and then run
 misc/scratch-build.bash -m foo -p bar -t prod-openmp -f esm45 -d my_build_path
 
 
-Here are other platforms that the above command worked on
+Here are some other platforms that the above command worked on
 
  stellar:
 ```bash

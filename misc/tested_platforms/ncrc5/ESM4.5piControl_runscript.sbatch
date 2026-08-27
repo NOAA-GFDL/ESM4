@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodes=18
 #SBATCH --account=gfdl_f
 #SBATCH --qos=normal
@@ -16,9 +16,10 @@ atm_threads=2
 ocn_ranks=1720
 config=${atm_ranks}x${atm_threads}a_${ocn_ranks}x1o
 date=`date '+%Y%m%d_%H%M'`
-bar=run3days.$date.$SLURM_JOB_ID
+bar=run1day.$date.$SLURM_JOB_ID
 
 echo "Hello world, I am running on node $HOSTNAME"
+tail -50 /proc/cpuinfo
 sleep 2
 ##
 root_dir=$HOME/esm45_pubrel
