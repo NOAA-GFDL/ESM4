@@ -6,22 +6,31 @@
 	url = http://github.com/NOAA-GFDL/GFDL_atmos_cubed_sphere.git
 [submodule "src/atmos_drivers"]
 	path = src/atmos_drivers
-	url = http://github.com/NOAA-GFDL/atmos_drivers.git
+	url = https://github.com/NOAA-GFDL/atmos_drivers.git
 [submodule "src/atmos_phys"]
 	path = src/atmos_phys
 	url = http://github.com/NOAA-GFDL/atmos_phys.git
-[submodule "src/coupler"]
-	path = src/coupler
-	url = http://github.com/NOAA-GFDL/coupler.git
+[submodule "src/FMScoupler"]
+	path = src/FMScoupler
+	url = http://github.com/NOAA-GFDL/FMScoupler.git
 [submodule "src/ice_param"]
 	path = src/ice_param
 	url = http://github.com/NOAA-GFDL/ice_param.git
-[submodule "src/mom6"]
-	path = src/mom6
-	url = https://github.com/NOAA-GFDL/MOM6-examples.git
-[submodule "src/ocean_shared"]
-	path = src/ocean_shared
-	url = https://github.com/NOAA-GFDL/ocean_BGC
+[submodule "src/MOM6"]
+	path = src/MOM6
+	url = https://github.com/NOAA-GFDL/MOM6.git
+[submodule "src/SIS2"]
+	path = src/SIS2
+	url = https://github.com/NOAA-GFDL/SIS2.git
+[submodule "src/icebergs"]
+	path = src/icebergs
+	url = https://github.com/NOAA-GFDL/icebergs.git
+[submodule "src/ocean_BGC"]
+	path = src/ocean_BGC
+	url = https://github.com/NOAA-GFDL/ocean_BGC.git
 [submodule "src/lm4p"]
 	path = src/lm4p
 	url = https://github.com/NOAA-GFDL/lm4.git
+[submodule "src/mkmf"]
+	path = src/mkmf
+	url = https://github.com/NOAA-GFDL/mkmf.git

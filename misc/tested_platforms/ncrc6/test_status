@@ -1,0 +1,4 @@
+Main,       ATM,        OCN         stdout file                                                                                        signature
+95.856567 81.190967 64.298877 stdout.ncrc6-inteloneapi252_netcdf17.prod-openmp.216x2a_1720x1o.run1day.20260827_1310.220450327          1/01/02_443494D4C1A674E9_40B9FA6C9CB02083
+96.339269 81.803104 64.095568 stdout.ncrc6-inteloneapi252_netcdf11.prod-openmp.216x2a_1720x1o.run1day.20260827_1241.220449324          1/01/02_443494D49DA0A61F_40BA5606FFE69A93
+

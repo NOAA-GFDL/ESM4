@@ -1,64 +1,52 @@
-# Makefile for Experiment 'esm4.1_libs_compile'
-
-BUILDROOT = $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
-
-SRCROOT = $(abspath $(BUILDROOT)../src)/ 
-
-#MK_TEMPLATE = $(BUILDROOT)templates/intel.mk
-ifeq ($(gcc),on)
-  MK_TEMPLATE = $(BUILDROOT)templates/gnu.mk
-else
-  MK_TEMPLATE = $(BUILDROOT)templates/intel.mk
-endif
-ifeq ($(SH),sh)
-  SHELL=/bin/sh
-endif
-
+# Makefile for ESM4
+SRCROOT = /apps/ESM4/src/
+BUILDROOT = /apps/ESM4/exec/
+MK_TEMPLATE = /apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk
 include $(MK_TEMPLATE)
-
-SUBMAKEFLAGS = BUILDROOT=$(BUILDROOT) SRCROOT=$(SRCROOT) MK_TEMPLATE=$(MK_TEMPLATE) BLD_TYPE=$(BLD_TYPE)
-
-esm4.1.x: coupler/libcoupler.a atmos_dyn/libatmos_dyn.a sis2/libsis2.a atmos_cubed_sphere/libatmos_cubed_sphere.a mom6/libmom6.a icebergs/libicebergs.a lm4P/liblm4P.a atmos_phys/libatmos_phys.a fms/build/libFMS/.libs/libFMS.a
-	$(LD) $^ $(LDFLAGS) -o $@  $(STATIC_LIBS)
-
-fms/build/libFMS/.libs/libFMS.a:  FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=fms $(@F) 
-
-coupler/libcoupler.a: atmos_dyn/libatmos_dyn.a sis2/libsis2.a atmos_cubed_sphere/libatmos_cubed_sphere.a mom6/libmom6.a icebergs/libicebergs.a lm4P/liblm4P.a atmos_phys/libatmos_phys.a fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=coupler $(@F)
-
-atmos_phys/libatmos_phys.a: fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=atmos_phys $(@F) 
-
-atmos_cubed_sphere/libatmos_cubed_sphere.a: atmos_phys/libatmos_phys.a fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP) --directory=$(BUILDROOT)atmos_cubed_sphere $(@F)
-
-atmos_dyn/libatmos_dyn.a: atmos_cubed_sphere/libatmos_cubed_sphere.a atmos_phys/libatmos_phys.a fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=atmos_dyn $(@F) 
-
-lm4P/liblm4P.a: fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=lm4P $(@F) 
-
-mom6/libmom6.a: fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP) OPENMP="" --directory=mom6 $(@F) 
-
-sis2/libsis2.a: icebergs/libicebergs.a mom6/libmom6.a fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=sis2 $(@F) 
-
-icebergs/libicebergs.a: fms/build/libFMS/.libs/libFMS.a FORCE
-	$(MAKE) $(SUBMAKEFLAGS) OPENMP=$(OPENMP)  --directory=icebergs $(@F) 
-
+ESM4.x:  FMScoupler/libFMScoupler.a atmos_drivers/libatmos_drivers.a GFDL_atmos_cubed_sphere/libGFDL_atmos_cubed_sphere.a ice_param/libice_param.a atmos_phys/libatmos_phys.a lm4p/liblm4p.a ocean/libocean.a FMS/libFMS.a 
+	$(LD) $^ $(LDFLAGS) -o $@ $(STATIC_LIBS)
+FMScoupler/libFMScoupler.a:  FMS/libFMS.a GFDL_atmos_cubed_sphere/libGFDL_atmos_cubed_sphere.a atmos_drivers/libatmos_drivers.a atmos_phys/libatmos_phys.a lm4p/liblm4p.a ice_param/libice_param.a ocean/libocean.a  FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory=FMScoupler $(@F)
+atmos_drivers/libatmos_drivers.a:  FMS/libFMS.a atmos_phys/libatmos_phys.a GFDL_atmos_cubed_sphere/libGFDL_atmos_cubed_sphere.a  FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory=atmos_drivers $(@F)
+GFDL_atmos_cubed_sphere/libGFDL_atmos_cubed_sphere.a:  FMS/libFMS.a atmos_phys/libatmos_phys.a  FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory=GFDL_atmos_cubed_sphere $(@F)
+ice_param/libice_param.a:  FMS/libFMS.a ocean/libocean.a  FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory=ice_param $(@F)
+atmos_phys/libatmos_phys.a:  FMS/libFMS.a  FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory=atmos_phys $(@F)
+lm4p/liblm4p.a:  FMS/libFMS.a  FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory=lm4p $(@F)
+ocean/libocean.a:  FMS/libFMS.a  FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) OPENMP="" --directory=ocean $(@F)
+FMS/libFMS.a:   FORCE
+	$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory=FMS $(@F)
 FORCE:
 
 clean:
-	$(MAKE) --directory=fms clean
+	$(MAKE) --directory=FMS clean
 	$(MAKE) --directory=atmos_phys clean
-	$(MAKE) --directory=atmos_dyn clean
-	$(MAKE) --directory=atmos_cubed_sphere clean
-	$(MAKE) --directory=lm4P clean
-	$(MAKE) --directory=mom6 clean
-	$(MAKE) --directory=sis2 clean
-	$(MAKE) --directory=icebergs clean
-	$(MAKE) --directory=coupler clean
-clean_all: clean
-	$(RM) *.x
+	$(MAKE) --directory=GFDL_atmos_cubed_sphere clean
+	$(MAKE) --directory=atmos_drivers clean
+	$(MAKE) --directory=lm4p clean
+	$(MAKE) --directory=ocean clean
+	$(MAKE) --directory=ice_param clean
+	$(MAKE) --directory=FMScoupler clean
+localize:
+	$(MAKE) -f $(BUILDROOT)FMS localize
+	$(MAKE) -f $(BUILDROOT)atmos_phys localize
+	$(MAKE) -f $(BUILDROOT)GFDL_atmos_cubed_sphere localize
+	$(MAKE) -f $(BUILDROOT)atmos_drivers localize
+	$(MAKE) -f $(BUILDROOT)lm4p localize
+	$(MAKE) -f $(BUILDROOT)ocean localize
+	$(MAKE) -f $(BUILDROOT)ice_param localize
+	$(MAKE) -f $(BUILDROOT)FMScoupler localize
+distclean:
+	$(RM) -r FMS
+	$(RM) -r atmos_phys
+	$(RM) -r GFDL_atmos_cubed_sphere
+	$(RM) -r atmos_drivers
+	$(RM) -r lm4p
+	$(RM) -r ocean
+	$(RM) -r ice_param
+	$(RM) -r FMScoupler

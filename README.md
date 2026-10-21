@@ -1,96 +1,137 @@
-# Earth System Model 4
+# Earth System Model 4.5
 
 ## What Is Included
-* [src]((https://github.com/NOAA-GFDL/ESM4/tree/master/src) source code for the ESM4 model (all code is in submodules)
-* [exec]((https://github.com/NOAA-GFDL/ESM4/tree/master/exec) Makefiles to compile the code 
-* [run]((https://github.com/NOAA-GFDL/ESM4/tree/master/run) Simple run script
+* [src]((https://github.com/NOAA-GFDL/ESM4/tree/esm45_pubrel/src) source code for the ESM4 model (all code is in submodules)
+* [exec]((https://github.com/NOAA-GFDL/ESM4/tree/esm45_pubrel/exec) Files to compile the code in a container
+* [run]((https://github.com/NOAA-GFDL/ESM4/tree/esm45_pubrel/run) Simple run script
+* [misc]((https://github.com/NOAA-GFDL/ESM4/tree/esm45_pubrel/misc) Miscellaneous tools to help users for build/run
 
 ## Cloning
 To clone the ESM4 model please use the recursive option
 ```bash
-git clone --recursive git@github.com:NOAA-GFDL/ESM4.git 
+git clone --recursive -b esm45_pubrel https://github.com/NOAA-GFDL/ESM4.git esm45_pubrel
+cd esm45_pubrel
 ```
-or 
-```bash
-git clone --recursive https://github.com/NOAA-GFDL/ESM4.git
+
+## Container
+
+### Pulling the container
+There is a container provided that has the application used to
+run the ESM4.5 model. The container for this model can be pulled
+using a container tool. Here is an example using apptainer
 ```
+apptainer pull docker://ghcr.io/noaa-gfdl/esm4:esm4.5
+```
+This is an MPI application which is built using Intel ifx and icx
+compilers with intel-mpi for an x86 system.  The container *should*
+be able to run on an x86 system with avx instructions, an ABI
+compatible MPI (mpich), and a compatible glib-C installation. The
+[Dockerfile](exec/Dockerfile) contains the details of the dependencies,
+compilers, and application build.
+
+### Running with the container
+When this model is run as a container, it needs to be executed using
+an MPI-bind strategy with apptainer or whatever container launching
+tool you are using. You will need to ensure that the system MPI and
+communication library paths are included in the bind paths at execution.
+
+Additionally, it is recommended that when updating the
+`LD_LIBRARY_PATH` in the container, you preserve the container's
+`LD_LIBRARY_PATH`.  Here is an example using Apptainer
+``` bash
+module unload netcdf-c netcdf-fortran hdf5
+module load mpich
+export APPTAINERENV_LD_LIBRARY_PATH=/path/to/mpi/lib:/path/to/libfabric/lib:\$LD_LIBRARY_PATH
+```
+By including the '\' before the '$', the system MPI will be found
+and the container `LD_LIBRARY_PATH` will be preserved inside the container.
+
+### MPICH
+This container will only run on X86 systems with mpich.  If you are
+using openMPI, you will need to modify the
+[Dockerfile](exec/Dockerfile) to use openMPI instead of Intel-mpi.
 
 ## Compiling
 
 ### Building the container
-The [container folder](container) provides example Dockerfiles and Signularity
-definition files to use to build AM4 containers using either GCC/GFORTAN or
-Intel oneAPI. There is a script that can be used to build the intel
-singularity containers, and the first step of this script can be used with the
-other GFDL climate models.
-
-
-### Building from source
-This model was originally compiled and run with the intel16 compiler.
-It is recommended that you compile with an intel compiler.
-
-Compiling assumes that you have an intel compiler, MPI (impi, mpich,
-openmpi, etc), netcdf, and hdf5 in your LD_LIBRARY_PATH and LIBRARY_PATH.
-It is also assumed that nf-config and nc-config are in your path. 
-If you work on a machine with modules, you may need to load these 
-packages into your environment.
-
-Makefiles have been included in the 
-[exec/](https://github.com/NOAA-GFDL/ESM4/tree/master/exec) folder.
-There are several option for compiling, which can be found in the 
-[template/intel.mk](https://github.com/NOAA-GFDL/ESM4/blob/master/exec/templates/intel.mk).  
-You may need to edit the template/intel.mk to update the compiler names
-or add any CPPDEF options specific for your system.
-The most common compile with optimizations on and with openmp would be 
-```bash
+The [exec/](exec/)
+folder contains a Dockerfile and Makefile that can be used to
+build the model container.  To build the container using podman:
+```
 cd exec
-make OPENMP=on
+podman build -t esm4:esm4.5 -f Dockerfile
 ```
-If you would like to compile with *-O2* instead of *-O3* do
-```bash
-make REPRO=on OPENMP=on
-```
-To compile with *-O0* and debug flags do
-```bash
-make BLD_TYPE=DEBUG OPENMP=on
-```
-Compiling with openMP is optional.
+*NOTE*: you may need to bind a filesystem using the `--volume`
+option in podman
 
-
-Here are examples of how to compile the model on various systems:
-
-gaea (NOAA RDHPCS cray system)
-```bash
-module load intel
-module load cray-netcdf
-module load cray-hdf5
-git clone --recursive git@github.com:NOAA-GFDL/ESM4.git
-cd ESM4/exec
-make MKL_LIBS="none" OPENMP=y
+If the intended use is to run the container using apptainer, you
+will need to convert the OCI podman container to a docker archive
+and then to a SIF file:
 ```
-Compiling on orion (MSU)
-```bash
-module load intel impi netcdf hdf5
-export LIBRARY_PATH=${LIBRARY_PATH}:${LD_LIBRARY_PATH}
-git clone --recursive git@github.com:NOAA-GFDL/ESM4.git
-cd ESM4/exec
-make OPENMP=on
+podman save -o esm4_esm4.5.tar localhost/esm4:esm4.5
+apptainer build --disable-cache esm4_esm4.5.sif docker-archive://esm4_esm4.5.tar
 ```
+You can now copy the esm4_esm4.5.sif to your run directory and
+use apptainer to launch.
+The container needs to be run on an x86 system with mpich-flavor MPI.
+If your system has openMPI, you will need to use the Dockerfile to build
+your own container.
+
+### Building executable from source (without container)
+It is possible to build this code from source by following the
+workflow of the Dockerfile and adapting the Makefile for your
+system (see misc/README). However, the preferred method for building and running the ESM4.5 is in a container.
 
 ## Model running
-A work directory needed for running the model can be obtained from
-ftp://data1.gfdl.noaa.gov/users/ESM4/ESM4Documentation/GFDL-ESM4/inputData/ESM4_rundir.tar.gz
+A work directory needed for running the model can be obtained via:
 
-The directory contains input.nml as the namelist, various input tables needed
+```
+#WARNING: The file size is 42GB. To get the data and run the model you would need at least 200GB free space.
+wget ftp://data1.gfdl.noaa.gov/users/ESM4/ESM4Documentation/GFDL-ESM4p5/inputData/ESM4.5-picontrol_rundir.tar.gz
+tar zxvf ESM4.5-picontrol_rundir.tar.gz
+run_directory=ESM4.5-picontrol_rundir
+```
+
+This directory contains input.nml as the namelist, various input tables needed
 for running the model, and model input files in a folder called INPUT/.  There
 is also a directory named RESTART/ that should be empty at the beginning of
-each run. 
+each run.
 
-There is a skeleton of a run script named [run/ESM4_run.sh](https://github.com/NOAA-GFDL/ESM4/blob/master/run/ESM4_run.sh).  You must update this
-script to run the model.  Include a path to the work directory and the executable.
-You should also update the program you need to run the model on your system.  The
-default for this script is `srun`.
+Below is an example of how to set up your run using slurm and the container
 
+```
+cd $run_directory
+module unload netcdf-c netcdf-fortran hdf5
+module load mpich
+export APPTAINER_BINDPATH=/path/to/mpi/lib,/path/to/libfabric/lib
+export APPTAINERENV_LD_LIBRARY_PATH=/path/to/mpi/lib:/path/to/libfabric/lib:\$LD_LIBRARY_PATH
+
+srun --ntasks=216 --cpus-per-task=2 --export=ALL,OMP_NUM_THREADS=2 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4_esm4.5.sif /apps/ESM4/exec/esm45.x : --ntasks=1720 --cpus-per-task=1 --export=ALL,OMP_NUM_THREADS=1 apptainer exec --writable-tmpfs --bind ${PWD} ${PWD}/esm4.5_compile-prod-openmp.sif /apps/ESM45/exec/esm45.x
+
+```
+
+Below is an example of how to set up your run using slurm and the user executable (see the README in misc for instruction to build an executable without using containers):
+```
+cd $run_directory
+module unload netcdf-c netcdf-fortran hdf5
+module load mpich
+exec=PATH_TO_USER_EXECUTABLE
+
+srun --ntasks=216 --cpus-per-task=2 --export=ALL,OMP_NUM_THREADS=2 $exec : --ntasks=1720 --cpus-per-task=1 --export=ALL,OMP_NUM_THREADS=1 $exec
+```
+
+The above srun command has two executing parts (separated by :) that run concurrently.
+
+The first part is for ATM+LND+ICE processes and needs 432 cores (216 MPI ranks * 2 OPENMP threads).
+
+The second part is for Ocean processes and needs 1720 cores (1720 MPI ranks).
+
+This set up requires a total of 216*2/CORES_PER_NODE + 1720/CORES_PER_NODE nodes to execute.
+The CORES_PER_NODE depends on the user platform setup. E.g., CORES_PER_NODE=192 for ncrc6.
+
+For assistance with setting up the binds for MPI on your system, you should contact you system adminstrators.
+
+A few simple slurm scripts are provided for the platfroms that this model is tested on, e.g., misc/tested_platforms/ncrc5/ESM4.5piControl_runscript.sbatch
 
 ## Disclaimer
 
